@@ -25,7 +25,7 @@ This project consists of:
 #### **1. Initial Setup (One-time)**
 ```bash
 # Clone the repository
-git clone https://github.com/PDAxh/backstage-ulp.git
+git clone https://github.com/pdaxh/backstage-ulp.git
 cd backstage-ULP
 
 # Build the Backstage application
