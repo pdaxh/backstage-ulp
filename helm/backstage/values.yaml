@@ -57,7 +57,7 @@ securityContext: {}
 
 # Image pull secrets
 imagePullSecrets:
-  - name: repo-creds-github
+  - name: ghcr-secret
 
 # Name override
 nameOverride: ""
