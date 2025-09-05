@@ -7,11 +7,97 @@ A Backstage Developer Portal for ULP, deployed via Helm and managed by ArgoCD.
 This project consists of:
 
 - **`backstage/`** - The actual Backstage application source code
+- **`docker-compose-simple.yml`** - Docker Compose setup for local development
 - **`helm/backstage/`** - Helm chart for Kubernetes deployment
 - **`argocd/`** - ArgoCD application configuration
 - **`.github/workflows/`** - CI/CD pipelines for building and deploying
 
+### **Deployment Options**
+
+1. **🐳 Docker Compose** (Recommended for Development)
+   - Simple setup with PostgreSQL
+   - Perfect for local development and testing
+   - No Kubernetes knowledge required
+
+2. **☸️ Kubernetes + ArgoCD** (Production)
+   - Full GitOps workflow
+   - Scalable and production-ready
+   - Requires Kubernetes cluster
+
 ## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker and Docker Compose
+- (Optional) Kubernetes cluster with ArgoCD installed
+- (Optional) Helm 3.x and kubectl configured
+
+## 🐳 Docker Compose Setup (Recommended for Development)
+
+The easiest way to run Backstage locally is using Docker Compose with PostgreSQL:
+
+### **Quick Start with Docker Compose**
+
+```bash
+# Clone the repository
+git clone https://github.com/pdaxh/backstage-ulp.git
+cd backstage-ULP
+
+# Start Backstage with PostgreSQL
+docker-compose -f docker-compose-simple.yml up -d
+
+# Check status
+docker-compose -f docker-compose-simple.yml ps
+
+# View logs
+docker-compose -f docker-compose-simple.yml logs backstage
+```
+
+### **Access Backstage**
+- **URL**: http://localhost:7007
+- **Database**: PostgreSQL on localhost:5432
+
+### **Docker Compose Management**
+
+```bash
+# Start services
+docker-compose -f docker-compose-simple.yml up -d
+
+# Stop services
+docker-compose -f docker-compose-simple.yml down
+
+# View logs
+docker-compose -f docker-compose-simple.yml logs backstage
+
+# Check status
+docker-compose -f docker-compose-simple.yml ps
+
+# Restart Backstage only
+docker-compose -f docker-compose-simple.yml restart backstage
+```
+
+### **Configuration**
+
+The Docker Compose setup uses:
+- **PostgreSQL 16** as the database
+- **Node.js 20** for Backstage
+- **Environment variables** from `.env` file
+- **Custom config** from `app-config.local.yaml`
+
+### **Environment Variables**
+
+Create a `.env` file (already included):
+```bash
+# Database Configuration
+PGUSER=backstage
+PGPASSWORD=backstage
+PGDATABASE=backstage
+
+# Backend Secret (change this in production!)
+BACKEND_SECRET=dev-secret-please-change
+```
+
+## ☸️ Kubernetes/ArgoCD Setup (Production)
 
 ### Prerequisites
 
@@ -262,6 +348,77 @@ helm upgrade --install backstage ./helm/backstage -n backstage -f helm/backstage
 # Check pod status
 kubectl get pods -n backstage
 
+# Check resource usage
+kubectl top pods -n backstage
+
+# View logs
+kubectl logs -f deployment/backstage -n backstage
+```
+
+## 🔧 Troubleshooting
+
+### Docker Compose Issues
+
+#### **Backstage won't start**
+```bash
+# Check logs
+docker-compose -f docker-compose-simple.yml logs backstage
+
+# Check if database is ready
+docker-compose -f docker-compose-simple.yml logs db
+
+# Restart services
+docker-compose -f docker-compose-simple.yml restart
+```
+
+#### **Database connection issues**
+```bash
+# Check if PostgreSQL is running
+docker-compose -f docker-compose-simple.yml ps db
+
+# Test database connection
+docker-compose -f docker-compose-simple.yml exec backstage sh -c "psql -h db -U backstage -d backstage -c 'SELECT 1;'"
+```
+
+#### **Port conflicts**
+```bash
+# Check what's using port 7007
+lsof -i :7007
+
+# Change ports in docker-compose-simple.yml if needed
+```
+
+#### **Permission issues**
+```bash
+# Fix file permissions
+sudo chown -R $USER:$USER ./backstage
+```
+
+### Kubernetes Issues
+
+#### **Pods not starting**
+```bash
+# Check pod status
+kubectl get pods -n backstage
+
+# Describe pod for details
+kubectl describe pod <pod-name> -n backstage
+
+# Check logs
+kubectl logs <pod-name> -n backstage
+```
+
+#### **Image pull issues**
+```bash
+# Check if image exists
+docker pull ghcr.io/pdaxh/backstage-ulp:dev
+
+# Check image pull secrets
+kubectl get secrets -n backstage
+```
+
+#### **Resource issues**
+```bash
 # Check resource usage
 kubectl top pods -n backstage
 
