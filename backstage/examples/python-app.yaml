@@ -1,0 +1,181 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: python-app
+  title: Python Flask App
+  description: A simple Flask web application with health checks and Kubernetes deployment
+  tags:
+    - python
+    - flask
+    - web
+    - api
+    - kubernetes
+  annotations:
+    backstage.io/managed-by-location: file:./examples/python-app.yaml
+    backstage.io/managed-by-origin-location: file:./examples/python-app.yaml
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: pdaxh/python-app
+spec:
+  type: service
+  lifecycle: production
+  owner: team-ulp
+  system: ulp-platform
+  providesApis:
+    - python-app-api
+  consumesApis:
+    - []
+  dependsOn:
+    - resource:postgres
+  links:
+    - url: https://github.com/pdaxh/python-app
+      title: Source Code
+      icon: github
+    - url: http://localhost:8080
+      title: Application
+      icon: web
+    - url: http://localhost:8080/health
+      title: Health Check
+      icon: health
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: python-app-api
+  title: Python App API
+  description: REST API endpoints for the Python Flask application
+  tags:
+    - python
+    - flask
+    - rest
+    - api
+  annotations:
+    backstage.io/managed-by-location: file:./examples/python-app.yaml
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team-ulp
+  system: ulp-platform
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Python App API
+      version: 1.0.0
+      description: A simple Flask API with health checks
+    servers:
+      - url: http://localhost:8080
+        description: Development server
+    paths:
+      /:
+        get:
+          summary: Home endpoint
+          description: Returns a welcome message
+          responses:
+            '200':
+              description: Welcome message
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Hello from Python App!"
+      /health:
+        get:
+          summary: Health check endpoint
+          description: Returns the health status of the application
+          responses:
+            '200':
+              description: Application is healthy
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "healthy"
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: postgres
+  title: PostgreSQL Database
+  description: PostgreSQL database used by the Python application
+  tags:
+    - postgresql
+    - database
+    - sql
+  annotations:
+    backstage.io/managed-by-location: file:./examples/python-app.yaml
+spec:
+  type: database
+  owner: team-ulp
+  system: ulp-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: ulp-platform
+  title: ULP Platform
+  description: The main platform system for ULP applications
+  tags:
+    - platform
+    - infrastructure
+  annotations:
+    backstage.io/managed-by-location: file:./examples/python-app.yaml
+spec:
+  owner: team-ulp
+  domain: ulp
+---
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: ulp
+  title: ULP Domain
+  description: The ULP domain containing all platform systems and services
+  annotations:
+    backstage.io/managed-by-location: file:./examples/org.yaml
+spec:
+  owner: team-ulp
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: team-ulp
+  title: ULP Team
+  description: The main development team for ULP platform
+  annotations:
+    backstage.io/managed-by-location: file:./examples/org.yaml
+spec:
+  type: team
+  parent: ulp-org
+  children: []
+  members:
+    - user:danielaxhammar
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: ulp-org
+  title: ULP Organization
+  description: The ULP organization
+  annotations:
+    backstage.io/managed-by-location: file:./examples/org.yaml
+spec:
+  type: organization
+  parent: null
+  children:
+    - team-ulp
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: danielaxhammar
+  title: Daniel Axhammar
+  description: Platform Engineer
+  annotations:
+    backstage.io/managed-by-location: file:./examples/org.yaml
+spec:
+  memberOf:
+    - team-ulp
