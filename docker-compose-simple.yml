@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: backstage-db
+    environment:
+      POSTGRES_USER: ${PGUSER:-backstage}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-backstage}
+      POSTGRES_DB: ${PGDATABASE:-backstage}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-backstage} -d ${PGDATABASE:-backstage}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backstage:
+    image: node:20-bullseye
+    container_name: backstage
+    working_dir: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "7007:7007"
+    environment:
+      # Point backend to Postgres (service name "db" on the compose network)
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: ${PGUSER:-backstage}
+      PGPASSWORD: ${PGPASSWORD:-backstage}
+      PGDATABASE: ${PGDATABASE:-backstage}
+      # Cookie/session secret for auth; override in .env
+      BACKEND_SECRET: ${BACKEND_SECRET:-dev-secret-please-change}
+      NODE_ENV: production
+    volumes:
+      # Mount the entire backstage directory
+      - ./backstage:/app
+      # Let you edit config without rebuilding
+      - ./app-config.local.yaml:/app/packages/backend/app-config.local.yaml:ro
+    command: >
+      sh -c "
+        corepack enable &&
+        yarn install --immutable &&
+        yarn workspace backend start --config app-config.local.yaml
+      "
+    restart: unless-stopped
+
+volumes:
+  pgdata:

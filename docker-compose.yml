@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: backstage-db
+    environment:
+      POSTGRES_USER: ${PGUSER:-backstage}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-backstage}
+      POSTGRES_DB: ${PGDATABASE:-backstage}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-backstage} -d ${PGDATABASE:-backstage}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backstage:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backstage
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "7007:7007"
+    env_file:
+      - .env
+    environment:
+      # Point backend to Postgres (service name "db" on the compose network)
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: ${PGUSER:-backstage}
+      PGPASSWORD: ${PGPASSWORD:-backstage}
+      PGDATABASE: ${PGDATABASE:-backstage}
+      # Cookie/session secret for auth; override in .env
+      BACKEND_SECRET: ${BACKEND_SECRET:-dev-secret-please-change}
+    volumes:
+      # Let you edit config without rebuilding
+      - ./app-config.local.yaml:/app/app-config.local.yaml:ro
+    # Optional: restart if it crashes
+    restart: unless-stopped
+
+volumes:
+  pgdata:
