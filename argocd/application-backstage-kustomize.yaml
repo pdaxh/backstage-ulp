@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backstage-kustomize
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: backstage
+    app.kubernetes.io/part-of: backstage-ulp
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/PDAxh/Backstage-ULP
+    targetRevision: main
+    path: k8s/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: backstage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+  revisionHistoryLimit: 10
