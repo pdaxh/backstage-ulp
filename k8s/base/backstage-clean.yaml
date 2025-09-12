@@ -11,10 +11,10 @@ stringData:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: backstage-config
+  name: backstage-app-config
   namespace: backstage
 data:
-  app-config.yaml: |
+  app-config.production.yaml: |
     app:
       title: Backstage ULP
       baseUrl: http://localhost:7007
@@ -101,8 +101,8 @@ spec:
     spec:
       containers:
       - name: backstage
-        # Using the official Backstage image
-        image: ghcr.io/backstage/backstage:latest
+        # Using your custom Backstage image
+        image: ghcr.io/pdaxh/backstage-ulp:latest
         ports:
         - containerPort: 7007
           name: http
@@ -119,22 +119,15 @@ spec:
           value: "backstage"
         - name: POSTGRES_DB
           value: "backstage"
-        - name: BACKEND_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: backstage-secret
-              key: BACKEND_SECRET
-        - name: GITHUB_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: backstage-secret
-              key: GITHUB_TOKEN
         - name: APP_CONFIG
-          value: "app-config.yaml"
+          value: "app-config.production.yaml"
+        envFrom:
+        - secretRef:
+            name: backstage-secret
         volumeMounts:
-        - name: config
-          mountPath: /app/app-config.yaml
-          subPath: app-config.yaml
+        - name: app-config
+          mountPath: /app/app-config.production.yaml
+          subPath: app-config.production.yaml
         livenessProbe:
           httpGet:
             path: /healthz
@@ -159,9 +152,9 @@ spec:
             memory: "1Gi"
             cpu: "1000m"
       volumes:
-      - name: config
+      - name: app-config
         configMap:
-          name: backstage-config
+          name: backstage-app-config
 ---
 apiVersion: v1
 kind: Service
