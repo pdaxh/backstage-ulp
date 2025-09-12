@@ -6,7 +6,6 @@ metadata:
 type: Opaque
 stringData:
   BACKEND_SECRET: dev-secret-please-change
-  GITHUB_TOKEN: ""  # Will be set via environment variable
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -51,10 +50,6 @@ metadata:
               cache:
                 store: memory
 
-            # integrations:
-            #   github:
-            #     - host: github.com
-            #       token: ${GITHUB_TOKEN}
 
             proxy:
               '/prometheus':
