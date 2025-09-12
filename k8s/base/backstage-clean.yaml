@@ -101,8 +101,8 @@ spec:
     spec:
       containers:
       - name: backstage
-        # Using a public image that should work
-        image: backstage/backstage:latest
+        # Using the official Backstage image
+        image: ghcr.io/backstage/backstage:latest
         ports:
         - containerPort: 7007
           name: http
