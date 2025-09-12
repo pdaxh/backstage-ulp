@@ -13,74 +13,92 @@ kind: ConfigMap
 metadata:
   name: backstage-app-config
   namespace: backstage
-data:
-  app-config.production.yaml: |
-    app:
-      title: Backstage ULP
-      baseUrl: http://localhost:7007
+        data:
+          app-config.local.yaml: |
+            app:
+              title: Backstage ULP
+              baseUrl: http://localhost:7008
+              support:
+                url: https://github.com/pdaxh/backstage-ulp/issues
+                items:
+                  - title: Support
+                    icon: help
+                    links:
+                      - url: https://github.com/pdaxh/backstage-ulp/issues
+                        title: GitHub Issues
 
-    organization:
-      name: ULP
+            organization:
+              name: ULP
 
-    backend:
-      baseUrl: http://localhost:7007
-      listen:
-        port: 7007
-      csp:
-        connect-src: ["'self'", 'http:', 'https:']
-      cors:
-        origin: http://localhost:3000
-        methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
-        credentials: true
-      database:
-        client: pg
-        connection:
-          host: postgres
-          port: 5432
-          user: backstage
-          password: backstage
-          database: backstage
+            backend:
+              baseUrl: http://localhost:7008
+              listen:
+                port: 7008
+              csp:
+                connect-src: ["'self'", 'http:', 'https:']
+              cors:
+                origin: http://localhost:3000
+                methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+                credentials: true
+              database:
+                client: pg
+                connection:
+                  host: postgres
+                  port: 5432
+                  user: backstage
+                  password: backstage
+                  database: backstage
+              cache:
+                store: memory
 
-    # integrations:
-    #   github:
-    #     - host: github.com
-    #       token: ${GITHUB_TOKEN}
+            # integrations:
+            #   github:
+            #     - host: github.com
+            #       token: ${GITHUB_TOKEN}
 
-    auth:
-      providers:
-        guest: {}
+            proxy:
+              '/prometheus':
+                target: 'http://localhost:9090'
+                changeOrigin: true
 
-    catalog:
-      import:
-        entityFilename: catalog-info.yaml
-        pullRequestBranchName: backstage-integration
-      rules:
-        - allow: [Component, System, API, Resource, Location]
-      locations:
-        - type: file
-          target: ./examples/entities.yaml
-        - type: file
-          target: ./examples/template/template.yaml
-          rules:
-            - allow: [Template]
-        - type: file
-          target: ./examples/org.yaml
-          rules:
-            - allow: [User, Group]
+            techdocs:
+              builder: 'local'
+              generator:
+                runIn: 'docker'
+              publisher:
+                type: 'local'
 
-    techdocs:
-      builder: 'local'
-      generator:
-        runIn: 'docker'
-      publisher:
-        type: 'local'
+            scaffolder:
+              defaultCommitMessage: 'chore: created {{cookiecutter.name}}'
+              defaultAuthor:
+                name: 'Backstage'
+                email: 'backstage@ulp.com'
 
-    scaffolder:
+            auth:
+              environment: development
+              providers:
+                guest: {}
 
-    kubernetes:
+            catalog:
+              import:
+                entityFilename: catalog-info.yaml
+                pullRequestBranchName: backstage-integration
+              rules:
+                - allow: [Component, System, API, Resource, Domain, Group, User, Template, Location]
+              locations:
+                - type: file
+                  target: /app/examples/entities.yaml
+                - type: file
+                  target: /app/examples/org.yaml
+                - type: file
+                  target: /app/examples/python-app.yaml
+                - type: file
+                  target: /app/examples/template/template.yaml
 
-    permission:
-      enabled: true
+            permission:
+              enabled: true
+              policy:
+                default: []
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -108,7 +126,7 @@ spec:
         # Using the custom Backstage image
         image: ghcr.io/pdaxh/backstage-ulp:latest
         ports:
-        - containerPort: 7007
+        - containerPort: 7008
           name: http
         env:
         - name: NODE_ENV
@@ -124,18 +142,18 @@ spec:
         - name: POSTGRES_DB
           value: "backstage"
         - name: APP_CONFIG
-          value: "app-config.production.yaml"
+          value: "app-config.local.yaml"
         envFrom:
         - secretRef:
             name: backstage-secret
         volumeMounts:
         - name: app-config
-          mountPath: /app/app-config.production.yaml
-          subPath: app-config.production.yaml
+          mountPath: /app/app-config.local.yaml
+          subPath: app-config.local.yaml
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 7007
+            port: 7008
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -143,7 +161,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /healthz
-            port: 7007
+            port: 7008
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 3
@@ -170,7 +188,7 @@ metadata:
 spec:
   ports:
   - port: 80
-    targetPort: 7007
+    targetPort: 7008
     name: http
   selector:
     app: backstage
