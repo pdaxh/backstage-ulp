@@ -22,8 +22,7 @@ spec:
   system: ulp-platform
   providesApis:
     - python-app-api
-  consumesApis:
-    - []
+  consumesApis: []
   dependsOn:
     - resource:postgres
   links:
@@ -164,7 +163,6 @@ metadata:
     backstage.io/managed-by-location: file:./examples/org.yaml
 spec:
   type: organization
-  parent: null
   children:
     - team-ulp
 ---

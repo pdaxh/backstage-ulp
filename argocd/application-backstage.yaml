@@ -3,19 +3,15 @@ kind: Application
 metadata:
   name: backstage
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app.kubernetes.io/name: backstage
+    app.kubernetes.io/part-of: backstage-ulp
 spec:
   project: default
   source:
-    repoURL: https://github.com/pdaxh/backstage-ulp
+    repoURL: https://github.com/PDAxh/backstage-ulp
     targetRevision: main
-    path: helm/backstage
-    helm:
-      releaseName: backstage
-      valueFiles:
-        - values.yaml
-        - values-prod.yaml
+    path: k8s/base
   destination:
     server: https://kubernetes.default.svc
     namespace: backstage
