@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: backstage
     app.kubernetes.io/part-of: backstage-ulp
-spec:
+spec:do Ie argo do it autpoaticly?`rgo 
   project: default
   source:
     repoURL: https://github.com/PDAxh/backstage-ulp
