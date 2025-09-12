@@ -41,10 +41,10 @@ data:
           password: backstage
           database: backstage
 
-    integrations:
-      github:
-        - host: github.com
-          token: ${GITHUB_TOKEN}
+    # integrations:
+    #   github:
+    #     - host: github.com
+    #       token: ${GITHUB_TOKEN}
 
     auth:
       providers:
