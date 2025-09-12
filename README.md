@@ -282,7 +282,7 @@ ingress:
   enabled: true
   className: "nginx"
   hosts:
-    - host: backstage.ulp.com
+    - host: dchange,kindbackstage.ulp.com
       paths:
         - path: /
           pathType: Prefix
