@@ -101,8 +101,8 @@ spec:
     spec:
       containers:
       - name: backstage
-        # Using your custom Backstage image
-        image: ghcr.io/pdaxh/backstage-ulp:latest
+        # Using the official Backstage image (will switch to custom later)
+        image: ghcr.io/backstage/backstage:latest
         ports:
         - containerPort: 7007
           name: http
