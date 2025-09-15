@@ -9,7 +9,7 @@ metadata:
 spec:do Ie argo do it autpoaticly?`rgo 
   project: default
   source:
-    repoURL: https://github.com/PDAxh/backstage-ulp
+    repoURL: https://github.com/pdaxh/backstage-ulp
     targetRevision: main
     path: k8s/base
   destination:
