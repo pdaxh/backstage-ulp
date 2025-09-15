@@ -5,8 +5,51 @@ resources:
   - ../../base
   - namespace.yaml
 
-patchesStrategicMerge:
-  - backstage-dev.yaml
+patches:
+  - target:
+      kind: Secret
+      name: backstage-secret
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: dev-portal
+  - target:
+      kind: ConfigMap
+      name: backstage-config
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: dev-portal
+  - target:
+      kind: Deployment
+      name: backstage
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: dev-portal
+      - op: replace
+        path: /spec/template/metadata/labels/environment
+        value: dev
+      - op: replace
+        path: /spec/selector/matchLabels/environment
+        value: dev
+  - target:
+      kind: Service
+      name: backstage
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: dev-portal
+  - target:
+      kind: Ingress
+      name: backstage
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: dev-portal
+      - op: replace
+        path: /spec/rules/0/host
+        value: backstage-dev.ulp.com
 
 images:
   - name: ghcr.io/pdaxh/backstage-ulp

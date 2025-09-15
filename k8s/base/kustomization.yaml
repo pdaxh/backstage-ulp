@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - postgres.yaml
-  - backstage-clean.yaml
+  - backstage.yaml
 
 commonLabels:
   app.kubernetes.io/name: backstage

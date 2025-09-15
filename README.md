@@ -1,6 +1,6 @@
 # Backstage-ULP
 
-A Backstage Developer Portal for ULP, deployed via Helm and managed by ArgoCD.
+A Backstage Developer Portal for ULP, deployed via Kustomize and managed by ArgoCD.
 
 ## 🏗️ Architecture
 
@@ -8,7 +8,7 @@ This project consists of:
 
 - **`backstage/`** - The actual Backstage application source code
 - **`docker-compose-simple.yml`** - Docker Compose setup for local development
-- **`helm/backstage/`** - Helm chart for Kubernetes deployment
+- **`k8s/`** - Kustomize manifests for Kubernetes deployment
 - **`argocd/`** - ArgoCD application configuration
 - **`.github/workflows/`** - CI/CD pipelines for building and deploying
 
@@ -20,7 +20,7 @@ This project consists of:
    - No Kubernetes knowledge required
 
 2. **☸️ Kubernetes + ArgoCD** (Production)
-   - Full GitOps workflow
+   - Full GitOps workflow with Kustomize
    - Scalable and production-ready
    - Requires Kubernetes cluster
 
@@ -30,7 +30,7 @@ This project consists of:
 
 - Docker and Docker Compose
 - (Optional) Kubernetes cluster with ArgoCD installed
-- (Optional) Helm 3.x and kubectl configured
+- (Optional) kubectl configured
 
 ## 🐳 Docker Compose Setup (Recommended for Development)
 
@@ -103,7 +103,6 @@ BACKEND_SECRET=dev-secret-please-change
 
 - Kubernetes cluster with ArgoCD installed
 - Docker and Docker Buildx
-- Helm 3.x
 - kubectl configured
 
 ### 🚀 **Complete Deployment Commands**
@@ -127,25 +126,24 @@ docker build -f backstage/packages/backend/Dockerfile -t ghcr.io/pdaxh/backstage
 docker push ghcr.io/pdaxh/backstage-ulp:dev
 ```
 
-#### **2. Deploy with Helm (Local)**
+#### **2. Deploy with Kustomize (Local)**
 ```bash
 # Create namespace and deploy
 kubectl create namespace backstage
-helm upgrade --install backstage ./helm/backstage -n backstage --create-namespace
+kubectl apply -k k8s/base/
 
 # Check deployment status
 kubectl get pods -n backstage
-helm status backstage -n backstage
 ```
 
 #### **3. Deploy with ArgoCD**
 ```bash
 # Apply ArgoCD application
-kubectl apply -f argocd/application-backstage.yaml
+kubectl apply -f argocd/application-backstage-kustomize.yaml
 
 # Check ArgoCD sync status
 kubectl get applications -n argocd
-argocd app sync backstage
+argocd app sync backstage-kustomize
 ```
 
 #### **4. Testing & Verification**
@@ -193,42 +191,42 @@ docker push ghcr.io/pdaxh/backstage-ulp:dev
 
 1. **Build the image:**
    ```bash
-   docker build -t ghcr.io/danielaxhammar/backstage:dev ./backstage
+   docker build -t ghcr.io/pdaxh/backstage:dev ./backstage
    ```
 
 2. **Push to registry:**
    ```bash
-   docker push ghcr.io/danielaxhammar/backstage:dev
+   docker push ghcr.io/pdaxh/backstage:dev
    ```
 
-### Deploying with Helm
+### Deploying with Kustomize
 
-1. **Install/upgrade the chart:**
+1. **Deploy base configuration:**
    ```bash
    # Development
-   helm upgrade --install backstage ./helm/backstage -n backstage -f helm/backstage/values-dev.yaml
+   kubectl apply -k k8s/overlays/dev/
    
    # Production
-   helm upgrade --install backstage ./helm/backstage -n backstage -f helm/backstage/values-prod.yaml
+   kubectl apply -k k8s/overlays/production/
    ```
 
 2. **Check deployment status:**
    ```bash
    kubectl get pods -n backstage
-   helm status backstage -n backstage
+   kubectl get pods -n dev-portal
    ```
 
 ### Deploying with ArgoCD
 
 1. **Apply the ArgoCD application:**
    ```bash
-   kubectl apply -f argocd/application-backstage.yaml
+   kubectl apply -f argocd/application-backstage-kustomize.yaml
    ```
 
 2. **Monitor sync status:**
    ```bash
    kubectl get applications -n argocd
-   argocd app sync backstage
+   argocd app sync backstage-kustomize
    ```
 
 ## 📁 Project Structure
@@ -241,13 +239,22 @@ Backstage-ULP/
 │   │   └── backend/             # Backend services
 │   ├── package.json
 │   └── app-config.yaml
-├── helm/backstage/              # Helm chart
-│   ├── templates/               # Kubernetes manifests
-│   ├── values.yaml              # Default values
-│   ├── values-dev.yaml          # Development overrides
-│   └── values-prod.yaml         # Production overrides
+├── k8s/                         # Kustomize manifests
+│   ├── base/                    # Base configuration
+│   │   ├── kustomization.yaml
+│   │   ├── namespace.yaml
+│   │   ├── backstage.yaml
+│   │   └── postgres.yaml
+│   └── overlays/                # Environment-specific overlays
+│       ├── dev/                 # Development environment
+│       │   ├── kustomization.yaml
+│       │   └── namespace.yaml
+│       └── production/          # Production environment
+│           ├── kustomization.yaml
+│           └── backstage-production.yaml
 ├── argocd/                      # ArgoCD configuration
-│   └── application-backstage.yaml
+│   ├── application-backstage-kustomize.yaml
+│   └── application-backstage-dev-kustomize.yaml
 ├── .github/workflows/           # CI/CD pipelines
 │   └── build-push.yaml
 └── README.md
@@ -255,15 +262,15 @@ Backstage-ULP/
 
 ## ⚙️ Configuration
 
-### Helm Values
+### Kustomize Overlays
 
-- **`values.yaml`** - Base configuration
-- **`values-dev.yaml`** - Development environment overrides
-- **`values-prod.yaml`** - Production environment overrides
+- **`k8s/base/`** - Base configuration shared across environments
+- **`k8s/overlays/dev/`** - Development environment overrides
+- **`k8s/overlays/production/`** - Production environment overrides
 
 ### Environment Variables
 
-Key environment variables can be set in the Helm values:
+Key environment variables can be set in the Kustomize manifests:
 
 ```yaml
 env:
@@ -282,7 +289,7 @@ ingress:
   enabled: true
   className: "nginx"
   hosts:
-    - host: dchange,kindbackstage.ulp.com
+    - host: backstage.ulp.com
       paths:
         - path: /
           pathType: Prefix
@@ -307,8 +314,8 @@ ingress:
 
 3. **Rebuild and redeploy:**
    ```bash
-   docker build -t ghcr.io/danielaxhammar/backstage:dev ./backstage
-   docker push ghcr.io/danielaxhammar/backstage:dev
+   docker build -t ghcr.io/pdaxh/backstage:dev ./backstage
+   docker push ghcr.io/pdaxh/backstage:dev
    ```
 
 ### Custom Pages
@@ -328,11 +335,11 @@ The GitHub Actions workflow automatically:
 
 ```bash
 # Build and push
-docker build -t ghcr.io/danielaxhammar/backstage:latest ./backstage
-docker push ghcr.io/danielaxhammar/backstage:latest
+docker build -t ghcr.io/pdaxh/backstage:latest ./backstage
+docker push ghcr.io/pdaxh/backstage:latest
 
-# Deploy with Helm
-helm upgrade --install backstage ./helm/backstage -n backstage -f helm/backstage/values-prod.yaml
+# Deploy with Kustomize
+kubectl apply -k k8s/overlays/production/
 ```
 
 ## 📊 Monitoring & Health Checks
@@ -430,7 +437,7 @@ kubectl logs -f deployment/backstage -n backstage
 
 ### RBAC
 
-The Helm chart creates:
+The Kustomize manifests create:
 - ServiceAccount with appropriate permissions
 - Role and RoleBinding for Kubernetes resources
 - Security contexts for pods and containers
@@ -466,23 +473,20 @@ secret:
 ### Debug Commands
 
 ```bash
-# Check Helm release status
-helm status backstage -n backstage
+# Check Kustomize build
+kubectl kustomize k8s/overlays/dev/
 
-# Validate Helm chart
-helm lint ./helm/backstage
-
-# Dry run deployment
-helm install --dry-run --debug backstage ./helm/backstage -n backstage
+# Validate Kustomize manifests
+kubectl apply -k k8s/overlays/dev/ --dry-run=client
 
 # Check ArgoCD sync
-argocd app get backstage
+argocd app get backstage-kustomize
 ```
 
 ## 📚 Additional Resources
 
 - [Backstage Documentation](https://backstage.io/docs)
-- [Helm Documentation](https://helm.sh/docs)
+- [Kustomize Documentation](https://kustomize.io)
 - [ArgoCD Documentation](https://argo-cd.readthedocs.io)
 - [Kubernetes Documentation](https://kubernetes.io/docs)
 
@@ -493,7 +497,7 @@ argocd app get backstage
 helm upgrade --install argocd-ulp ./argocd-ULP --namespace argocd --create-namespace --wait
 
 # 2. Deploy Backstage via ArgoCD
-kubectl apply -f backstage-ULP/argocd/application-backstage.yaml
+kubectl apply -f backstage-ULP/argocd/application-backstage-kustomize.yaml
 
 # 3. Check status
 kubectl get pods -n backstage
