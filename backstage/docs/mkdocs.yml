@@ -1,0 +1,42 @@
+site_name: ULP Backstage Documentation
+site_description: Ultimate Learning Platform Backstage Developer Portal Documentation
+site_url: https://backstage.ulp.com/docs
+repo_url: https://github.com/pdaxh/backstage-ulp
+edit_uri: edit/main/docs/
+
+nav:
+  - Home: README.md
+  - Getting Started: getting-started.md
+  - User Guide: user-guide.md
+  - Troubleshooting: troubleshooting.md
+
+plugins:
+  - techdocs-core
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - codehilite:
+      linenums: true
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+theme:
+  name: material
+  palette:
+    primary: blue
+    accent: light blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - search.highlight
+    - search.share
