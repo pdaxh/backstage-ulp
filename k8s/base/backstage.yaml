@@ -41,6 +41,7 @@ data:
           password: backstage
           database: backstage
 
+
     # integrations:
     #   github:
     #     - host: github.com
@@ -80,7 +81,7 @@ data:
     kubernetes:
 
     permission:
-      enabled: true
+      enabled: false
 ---
 apiVersion: apps/v1
 kind: Deployment
