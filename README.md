@@ -2,7 +2,7 @@
 
 A Backstage Developer Portal for ULP, deployed via Kustomize and managed by ArgoCD.
 
-## 🏗️ Architecture
+## Architecture
 
 This project consists of:
 
@@ -14,17 +14,17 @@ This project consists of:
 
 ### **Deployment Options**
 
-1. **🐳 Docker Compose** (Recommended for Development)
+1. **Docker Compose** (Recommended for Development)
    - Simple setup with PostgreSQL
    - Perfect for local development and testing
    - No Kubernetes knowledge required
 
-2. **☸️ Kubernetes + ArgoCD** (Production)
+2. **Kubernetes + ArgoCD** (Production)
    - Full GitOps workflow with Kustomize
    - Scalable and production-ready
    - Requires Kubernetes cluster
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -32,7 +32,7 @@ This project consists of:
 - (Optional) Kubernetes cluster with ArgoCD installed
 - (Optional) kubectl configured
 
-## 🐳 Docker Compose Setup (Recommended for Development)
+## Docker Compose Setup (Recommended for Development)
 
 The easiest way to run Backstage locally is using Docker Compose with PostgreSQL:
 
@@ -97,7 +97,7 @@ PGDATABASE=backstage
 BACKEND_SECRET=dev-secret-please-change
 ```
 
-## ☸️ Kubernetes/ArgoCD Setup (Production)
+## Kubernetes/ArgoCD Setup (Production)
 
 ### Prerequisites
 
@@ -105,7 +105,7 @@ BACKEND_SECRET=dev-secret-please-change
 - Docker and Docker Buildx
 - kubectl configured
 
-### 🚀 **Complete Deployment Commands**
+### **Complete Deployment Commands**
 
 #### **1. Initial Setup (One-time)**
 ```bash
@@ -229,7 +229,7 @@ docker push ghcr.io/pdaxh/backstage-ulp:dev
    argocd app sync backstage-kustomize
    ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Backstage-ULP/
@@ -260,7 +260,7 @@ Backstage-ULP/
 └── README.md
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### Kustomize Overlays
 
@@ -295,7 +295,7 @@ ingress:
           pathType: Prefix
 ```
 
-## 🔧 Customization
+## Customization
 
 ### Adding Plugins
 
@@ -322,7 +322,7 @@ ingress:
 
 Create new pages in `backstage/packages/app/src/components/` and register them in the app.
 
-## 🚀 CI/CD Pipeline
+## CI/CD Pipeline
 
 The GitHub Actions workflow automatically:
 
@@ -342,7 +342,7 @@ docker push ghcr.io/pdaxh/backstage:latest
 kubectl apply -k k8s/overlays/production/
 ```
 
-## 📊 Monitoring & Health Checks
+## Monitoring & Health Checks
 
 ### Health Endpoints
 
@@ -362,7 +362,7 @@ kubectl top pods -n backstage
 kubectl logs -f deployment/backstage -n backstage
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Docker Compose Issues
 
@@ -433,7 +433,7 @@ kubectl top pods -n backstage
 kubectl logs -f deployment/backstage -n backstage
 ```
 
-## 🔒 Security
+## Security
 
 ### RBAC
 
@@ -490,7 +490,7 @@ argocd app get backstage-kustomize
 - [ArgoCD Documentation](https://argo-cd.readthedocs.io)
 - [Kubernetes Documentation](https://kubernetes.io/docs)
 
-## 🚀 **Quick Reference - Essential Commands**
+## **Quick Reference - Essential Commands**
 
 ```bash
 # 1. Deploy ArgoCD first (from argocd-ULP repo)
@@ -507,7 +507,7 @@ kubectl get applications -n argocd
 kubectl port-forward svc/backstage -n backstage 7007:80
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch

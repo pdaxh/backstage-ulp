@@ -11,7 +11,7 @@ import { Grid, Typography, Box } from '@material-ui/core';
 
 export const WelcomePage = () => {
   const welcomeContent = `
-# Welcome to ULP Backstage! 🚀
+# Welcome to ULP Backstage!
 
 Welcome to the **Ultimate Learning Platform (ULP) Backstage Developer Portal**!
 
@@ -19,11 +19,11 @@ This is your central hub for discovering, managing, and building software compon
 
 ## What you can do here:
 
-- **📚 Browse the Catalog** - Discover all your services, APIs, and components
-- **🔍 Search** - Find anything across your organization
-- **📖 Documentation** - Access technical documentation and guides
-- **🛠️ Create** - Build new components using our templates
-- **📊 Monitor** - Track the health and status of your services
+- **Browse the Catalog** - Discover all your services, APIs, and components
+- **Search** - Find anything across your organization
+- **Documentation** - Access technical documentation and guides
+- **Create** - Build new components using our templates
+- **Monitor** - Track the health and status of your services
 
 ## Getting Started
 
@@ -33,7 +33,7 @@ This is your central hub for discovering, managing, and building software compon
 
 ---
 
-*Happy coding! 🎉*
+*Happy coding!*
   `;
 
   return (
@@ -58,13 +58,13 @@ This is your central hub for discovering, managing, and building software compon
                   <strong>📚 Catalog:</strong> Browse all your services and components
                 </Typography>
                 <Typography variant="body1" paragraph>
-                  <strong>🔍 Search:</strong> Find anything across your organization
+                  <strong>Search:</strong> Find anything across your organization
                 </Typography>
                 <Typography variant="body1" paragraph>
                   <strong>📖 Docs:</strong> Access technical documentation
                 </Typography>
                 <Typography variant="body1" paragraph>
-                  <strong>🛠️ Create:</strong> Build new components with templates
+                  <strong>Create:</strong> Build new components with templates
                 </Typography>
               </Box>
             </InfoCard>
@@ -73,16 +73,16 @@ This is your central hub for discovering, managing, and building software compon
             <InfoCard title="System Status">
               <Box padding={2}>
                 <Typography variant="body1" paragraph>
-                  ✅ <strong>Backstage:</strong> Running
+                  <strong>Backstage:</strong> Running
                 </Typography>
                 <Typography variant="body1" paragraph>
-                  ✅ <strong>Database:</strong> Connected
+                  <strong>Database:</strong> Connected
                 </Typography>
                 <Typography variant="body1" paragraph>
-                  ✅ <strong>Search:</strong> Indexed
+                  <strong>Search:</strong> Indexed
                 </Typography>
                 <Typography variant="body1" paragraph>
-                  ✅ <strong>Catalog:</strong> Loaded
+                  <strong>Catalog:</strong> Loaded
                 </Typography>
               </Box>
             </InfoCard>

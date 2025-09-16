@@ -17,7 +17,7 @@ The service catalog is the heart of Backstage. It provides:
 - **Dependencies**: Understand how services relate to each other
 - **Health Status**: Monitor the health of your services
 
-### 🔍 Search
+### Search
 
 Powerful search capabilities across:
 
@@ -36,7 +36,7 @@ Access and manage technical documentation:
 - **Runbooks**: Operational procedures and guides
 - **Architecture Decision Records (ADRs)**
 
-### 🛠️ Software Templates
+### Software Templates
 
 Create new projects using standardized templates:
 

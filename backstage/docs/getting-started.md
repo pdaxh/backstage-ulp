@@ -46,4 +46,4 @@ Visit the **Docs** section to access technical documentation and guides.
 
 ---
 
-*Happy coding! 🚀*
+*Happy coding!*
