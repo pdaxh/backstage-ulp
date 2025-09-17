@@ -1,0 +1,303 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: monitoring-stack
+  title: Monitoring and Observability Stack
+  description: Comprehensive monitoring solution with Prometheus, Grafana, and Jaeger
+  tags:
+    - monitoring
+    - observability
+    - prometheus
+    - grafana
+    - jaeger
+    - metrics
+  annotations:
+    backstage.io/managed-by-location: file:./examples/monitoring-stack.yaml
+    backstage.io/managed-by-origin-location: file:./examples/monitoring-stack.yaml
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: pdaxh/monitoring-stack
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: ulp-platform
+  providesApis:
+    - prometheus-api
+    - grafana-api
+    - jaeger-api
+  links:
+    - url: https://github.com/pdaxh/monitoring-stack
+      title: Source Code
+      icon: github
+    - url: http://localhost:9090
+      title: Prometheus
+      icon: web
+    - url: http://localhost:3001
+      title: Grafana
+      icon: web
+    - url: http://localhost:16686
+      title: Jaeger
+      icon: web
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: prometheus-api
+  title: Prometheus Metrics API
+  description: Prometheus metrics collection and query API
+  tags:
+    - prometheus
+    - metrics
+    - monitoring
+    - api
+  annotations:
+    backstage.io/managed-by-location: file:./examples/monitoring-stack.yaml
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: ulp-platform
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Prometheus API
+      version: 1.0.0
+      description: Prometheus metrics API
+    servers:
+      - url: http://localhost:9090/api/v1
+        description: Prometheus server
+    paths:
+      /query:
+        get:
+          summary: Query metrics
+          description: Query Prometheus metrics
+          parameters:
+            - name: query
+              in: query
+              required: true
+              schema:
+                type: string
+              description: PromQL query
+          responses:
+            '200':
+              description: Query results
+              content:
+                application/json:
+                  schema:
+                    type: object
+      /query_range:
+        get:
+          summary: Query metrics over time range
+          description: Query Prometheus metrics over a time range
+          parameters:
+            - name: query
+              in: query
+              required: true
+              schema:
+                type: string
+              description: PromQL query
+            - name: start
+              in: query
+              required: true
+              schema:
+                type: string
+                format: date-time
+              description: Start time
+            - name: end
+              in: query
+              required: true
+              schema:
+                type: string
+                format: date-time
+              description: End time
+          responses:
+            '200':
+              description: Query results
+              content:
+                application/json:
+                  schema:
+                    type: object
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: grafana-api
+  title: Grafana Dashboard API
+  description: Grafana dashboard and visualization API
+  tags:
+    - grafana
+    - dashboard
+    - visualization
+    - api
+  annotations:
+    backstage.io/managed-by-location: file:./examples/monitoring-stack.yaml
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: ulp-platform
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Grafana API
+      version: 1.0.0
+      description: Grafana dashboard API
+    servers:
+      - url: http://localhost:3001/api
+        description: Grafana server
+    paths:
+      /dashboards:
+        get:
+          summary: List dashboards
+          description: Get list of available dashboards
+          responses:
+            '200':
+              description: List of dashboards
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        url:
+                          type: string
+      /dashboards/{uid}:
+        get:
+          summary: Get dashboard
+          description: Get specific dashboard by UID
+          parameters:
+            - name: uid
+              in: path
+              required: true
+              schema:
+                type: string
+              description: Dashboard UID
+          responses:
+            '200':
+              description: Dashboard details
+              content:
+                application/json:
+                  schema:
+                    type: object
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: jaeger-api
+  title: Jaeger Tracing API
+  description: Jaeger distributed tracing API
+  tags:
+    - jaeger
+    - tracing
+    - observability
+    - api
+  annotations:
+    backstage.io/managed-by-location: file:./examples/monitoring-stack.yaml
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: ulp-platform
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Jaeger API
+      version: 1.0.0
+      description: Jaeger tracing API
+    servers:
+      - url: http://localhost:16686/api
+        description: Jaeger server
+    paths:
+      /traces:
+        get:
+          summary: Search traces
+          description: Search for traces
+          parameters:
+            - name: service
+              in: query
+              schema:
+                type: string
+              description: Service name
+            - name: operation
+              in: query
+              schema:
+                type: string
+              description: Operation name
+            - name: start
+              in: query
+              schema:
+                type: string
+                format: date-time
+              description: Start time
+            - name: end
+              in: query
+              schema:
+                type: string
+                format: date-time
+              description: End time
+          responses:
+            '200':
+              description: List of traces
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      type: object
+      /traces/{traceId}:
+        get:
+          summary: Get trace
+          description: Get specific trace by ID
+          parameters:
+            - name: traceId
+              in: path
+              required: true
+              schema:
+                type: string
+              description: Trace ID
+          responses:
+            '200':
+              description: Trace details
+              content:
+                application/json:
+                  schema:
+                    type: object
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: prometheus-storage
+  title: Prometheus Storage
+  description: Persistent storage for Prometheus metrics data
+  tags:
+    - prometheus
+    - storage
+    - metrics
+  annotations:
+    backstage.io/managed-by-location: file:./examples/monitoring-stack.yaml
+spec:
+  type: storage
+  owner: platform-team
+  system: ulp-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: grafana-database
+  title: Grafana Database
+  description: Database for Grafana dashboards and configurations
+  tags:
+    - grafana
+    - database
+    - sqlite
+  annotations:
+    backstage.io/managed-by-location: file:./examples/monitoring-stack.yaml
+spec:
+  type: database
+  owner: platform-team
+  system: ulp-platform

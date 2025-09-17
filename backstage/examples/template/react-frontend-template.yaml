@@ -1,0 +1,166 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: react-frontend
+  title: React Frontend Template
+  description: A modern React frontend application with TypeScript, Material-UI, and Vite
+  tags:
+    - react
+    - typescript
+    - frontend
+    - material-ui
+    - vite
+    - docker
+  annotations:
+    backstage.io/managed-by-location: file:./examples/template/react-frontend-template.yaml
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: website
+  lifecycle: production
+  owner: platform-team
+  system: ulp-platform
+  parameters:
+    - name: app_name
+      title: Application Name
+      description: The name of the React application
+      type: string
+      required: true
+      ui:autofocus: true
+    - name: app_description
+      title: Application Description
+      description: A brief description of what this application does
+      type: string
+      required: true
+    - name: team_owner
+      title: Team Owner
+      description: The team that owns this application
+      type: string
+      required: true
+      default: team-ulp
+    - name: port
+      title: Development Port
+      description: The port number for development server
+      type: number
+      required: true
+      default: 3000
+    - name: include_storybook
+      title: Include Storybook
+      description: Whether to include Storybook for component development
+      type: boolean
+      required: false
+      default: true
+    - name: include_testing
+      title: Include Testing
+      description: Whether to include Jest and React Testing Library
+      type: boolean
+      required: false
+      default: true
+    - name: include_pwa
+      title: Include PWA Features
+      description: Whether to include Progressive Web App features
+      type: boolean
+      required: false
+      default: false
+    - name: include_dark_mode
+      title: Include Dark Mode
+      description: Whether to include dark mode support
+      type: boolean
+      required: false
+      default: true
+    - name: api_base_url
+      title: API Base URL
+      description: The base URL for the backend API
+      type: string
+      required: true
+      default: "http://localhost:8080"
+  steps:
+    - id: fetch-base
+      name: Fetch Base Template
+      action: fetch:template
+      input:
+        url: https://github.com/pdaxh/react-frontend-template
+        values:
+          app_name: "{{ parameters.app_name }}"
+          app_description: "{{ parameters.app_description }}"
+          team_owner: "{{ parameters.team_owner }}"
+          port: "{{ parameters.port }}"
+          include_storybook: "{{ parameters.include_storybook }}"
+          include_testing: "{{ parameters.include_testing }}"
+          include_pwa: "{{ parameters.include_pwa }}"
+          include_dark_mode: "{{ parameters.include_dark_mode }}"
+          api_base_url: "{{ parameters.api_base_url }}"
+    - id: create-catalog-info
+      name: Create Catalog Info
+      action: fetch:plain
+      input:
+        targetPath: ./catalog-info.yaml
+        url: https://raw.githubusercontent.com/pdaxh/backstage-ulp/main/examples/template/react-catalog-info.yaml
+    - id: create-k8s-manifests
+      name: Create Kubernetes Manifests
+      action: fetch:plain
+      input:
+        targetPath: ./k8s/
+        url: https://github.com/pdaxh/react-frontend-template/tree/main/k8s
+    - id: create-dockerfile
+      name: Create Dockerfile
+      action: fetch:plain
+      input:
+        targetPath: ./Dockerfile
+        url: https://raw.githubusercontent.com/pdaxh/react-frontend-template/main/Dockerfile
+    - id: create-docker-compose
+      name: Create Docker Compose
+      action: fetch:plain
+      input:
+        targetPath: ./docker-compose.yml
+        url: https://raw.githubusercontent.com/pdaxh/react-frontend-template/main/docker-compose.yml
+    - id: create-github-workflow
+      name: Create GitHub Workflow
+      action: fetch:plain
+      input:
+        targetPath: ./.github/workflows/ci-cd.yml
+        url: https://raw.githubusercontent.com/pdaxh/react-frontend-template/main/.github/workflows/ci-cd.yml
+    - id: create-readme
+      name: Create README
+      action: fetch:plain
+      input:
+        targetPath: ./README.md
+        url: https://raw.githubusercontent.com/pdaxh/react-frontend-template/main/README.md
+  output:
+    - title: Repository
+      text: |
+        A new repository has been created with the React frontend template.
+        
+        **Next steps:**
+        1. Review the generated code and configuration
+        2. Customize the UI components in `src/components/`
+        3. Update the API integration in `src/services/`
+        4. Configure environment variables in `.env`
+        5. Deploy to your Kubernetes cluster
+        6. Register the application in Backstage catalog
+        
+        **Repository URL:** https://github.com/{{ parameters.team_owner }}/{{ parameters.app_name }}
+    - title: Development
+      text: |
+        The application includes comprehensive development tools:
+        
+        - **Development Server:** Available at http://localhost:{{ parameters.port }}
+        - **Storybook:** Available at http://localhost:6006 (if enabled)
+        - **Testing:** Run tests with `npm test`
+        - **Linting:** Run linting with `npm run lint`
+        - **Type Checking:** Run type checking with `npm run type-check`
+        
+        **Local Development:**
+        ```bash
+        npm install
+        npm run dev
+        ```
+        
+        **Docker Development:**
+        ```bash
+        docker-compose up -d
+        ```
+        
+        **Kubernetes Deployment:**
+        ```bash
+        kubectl apply -f k8s/
+        ```

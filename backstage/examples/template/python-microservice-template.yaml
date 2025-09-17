@@ -1,0 +1,151 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: python-microservice
+  title: Python Microservice Template
+  description: A production-ready Python microservice with Flask, PostgreSQL, and Kubernetes deployment
+  tags:
+    - python
+    - flask
+    - microservice
+    - postgresql
+    - kubernetes
+    - docker
+  annotations:
+    backstage.io/managed-by-location: file:./examples/template/python-microservice-template.yaml
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: ulp-platform
+  parameters:
+    - name: service_name
+      title: Service Name
+      description: The name of the microservice
+      type: string
+      required: true
+      ui:autofocus: true
+    - name: service_description
+      title: Service Description
+      description: A brief description of what this service does
+      type: string
+      required: true
+    - name: team_owner
+      title: Team Owner
+      description: The team that owns this service
+      type: string
+      required: true
+      default: team-ulp
+    - name: database_name
+      title: Database Name
+      description: The name of the PostgreSQL database
+      type: string
+      required: true
+      default: "{{cookiecutter.service_name}}_db"
+    - name: port
+      title: Service Port
+      description: The port number for the service
+      type: number
+      required: true
+      default: 8080
+    - name: include_redis
+      title: Include Redis
+      description: Whether to include Redis for caching
+      type: boolean
+      required: false
+      default: true
+    - name: include_monitoring
+      title: Include Monitoring
+      description: Whether to include Prometheus metrics and health checks
+      type: boolean
+      required: false
+      default: true
+    - name: include_docs
+      title: Include Documentation
+      description: Whether to include API documentation with Swagger
+      type: boolean
+      required: false
+      default: true
+  steps:
+    - id: fetch-base
+      name: Fetch Base Template
+      action: fetch:template
+      input:
+        url: https://github.com/pdaxh/python-microservice-template
+        values:
+          service_name: "{{ parameters.service_name }}"
+          service_description: "{{ parameters.service_description }}"
+          team_owner: "{{ parameters.team_owner }}"
+          database_name: "{{ parameters.database_name }}"
+          port: "{{ parameters.port }}"
+          include_redis: "{{ parameters.include_redis }}"
+          include_monitoring: "{{ parameters.include_monitoring }}"
+          include_docs: "{{ parameters.include_docs }}"
+    - id: create-catalog-info
+      name: Create Catalog Info
+      action: fetch:plain
+      input:
+        targetPath: ./catalog-info.yaml
+        url: https://raw.githubusercontent.com/pdaxh/backstage-ulp/main/examples/template/catalog-info.yaml
+    - id: create-k8s-manifests
+      name: Create Kubernetes Manifests
+      action: fetch:plain
+      input:
+        targetPath: ./k8s/
+        url: https://github.com/pdaxh/python-microservice-template/tree/main/k8s
+    - id: create-dockerfile
+      name: Create Dockerfile
+      action: fetch:plain
+      input:
+        targetPath: ./Dockerfile
+        url: https://raw.githubusercontent.com/pdaxh/python-microservice-template/main/Dockerfile
+    - id: create-docker-compose
+      name: Create Docker Compose
+      action: fetch:plain
+      input:
+        targetPath: ./docker-compose.yml
+        url: https://raw.githubusercontent.com/pdaxh/python-microservice-template/main/docker-compose.yml
+    - id: create-github-workflow
+      name: Create GitHub Workflow
+      action: fetch:plain
+      input:
+        targetPath: ./.github/workflows/ci-cd.yml
+        url: https://raw.githubusercontent.com/pdaxh/python-microservice-template/main/.github/workflows/ci-cd.yml
+    - id: create-readme
+      name: Create README
+      action: fetch:plain
+      input:
+        targetPath: ./README.md
+        url: https://raw.githubusercontent.com/pdaxh/python-microservice-template/main/README.md
+  output:
+    - title: Repository
+      text: |
+        A new repository has been created with the microservice template.
+        
+        **Next steps:**
+        1. Review the generated code and configuration
+        2. Update the service-specific logic in `src/`
+        3. Configure environment variables in `.env`
+        4. Deploy to your Kubernetes cluster
+        5. Register the service in Backstage catalog
+        
+        **Repository URL:** https://github.com/{{ parameters.team_owner }}/{{ parameters.service_name }}
+    - title: Documentation
+      text: |
+        The service includes comprehensive documentation:
+        
+        - **API Documentation:** Available at `/docs` endpoint
+        - **Health Checks:** Available at `/health` endpoint
+        - **Metrics:** Available at `/metrics` endpoint (if monitoring enabled)
+        - **README:** Complete setup and deployment guide
+        
+        **Local Development:**
+        ```bash
+        docker-compose up -d
+        ```
+        
+        **Kubernetes Deployment:**
+        ```bash
+        kubectl apply -f k8s/
+        ```

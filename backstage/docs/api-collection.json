@@ -1,0 +1,377 @@
+{
+  "info": {
+    "name": "ULP Platform API Collection",
+    "description": "Complete API collection for the ULP platform services",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Python App API",
+      "description": "Python Flask application API endpoints",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "response": [
+            {
+              "name": "Healthy Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/health",
+                  "host": ["{{base_url}}"],
+                  "path": ["health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"healthy\",\n  \"timestamp\": \"2024-01-01T00:00:00Z\",\n  \"version\": \"1.0.0\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Home Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          },
+          "response": [
+            {
+              "name": "Welcome Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/",
+                  "host": ["{{base_url}}"],
+                  "path": [""]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Hello from Python App!\",\n  \"version\": \"1.0.0\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "status"]
+            }
+          },
+          "response": [
+            {
+              "name": "Status Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/status",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "status"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"running\",\n  \"uptime\": 3600,\n  \"memory_usage\": \"45%\",\n  \"cpu_usage\": \"12%\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Backstage API",
+      "description": "Backstage developer portal API endpoints",
+      "item": [
+        {
+          "name": "Get Catalog Entities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backstage_url}}/api/catalog/entities",
+              "host": ["{{backstage_url}}"],
+              "path": ["api", "catalog", "entities"]
+            }
+          },
+          "response": [
+            {
+              "name": "Entities List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{backstage_url}}/api/catalog/entities",
+                  "host": ["{{backstage_url}}"],
+                  "path": ["api", "catalog", "entities"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"apiVersion\": \"backstage.io/v1alpha1\",\n      \"kind\": \"Component\",\n      \"metadata\": {\n        \"name\": \"python-app\",\n        \"title\": \"Python Flask App\"\n      }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Search Entities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{backstage_url}}/api/search/query?term={{search_term}}",
+              "host": ["{{backstage_url}}"],
+              "path": ["api", "search", "query"],
+              "query": [
+                {
+                  "key": "term",
+                  "value": "{{search_term}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Search Results",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{backstage_url}}/api/search/query?term={{search_term}}",
+                  "host": ["{{backstage_url}}"],
+                  "path": ["api", "search", "query"],
+                  "query": [
+                    {
+                      "key": "term",
+                      "value": "{{search_term}}"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"results\": [\n    {\n      \"title\": \"Python App\",\n      \"text\": \"A simple Flask web application\",\n      \"location\": \"/catalog/default/component/python-app\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Monitoring APIs",
+      "description": "Monitoring and observability API endpoints",
+      "item": [
+        {
+          "name": "Prometheus Query",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{prometheus_url}}/api/v1/query?query={{promql_query}}",
+              "host": ["{{prometheus_url}}"],
+              "path": ["api", "v1", "query"],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "{{promql_query}}"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Query Results",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{prometheus_url}}/api/v1/query?query={{promql_query}}",
+                  "host": ["{{prometheus_url}}"],
+                  "path": ["api", "v1", "query"],
+                  "query": [
+                    {
+                      "key": "query",
+                      "value": "{{promql_query}}"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"success\",\n  \"data\": {\n    \"resultType\": \"vector\",\n    \"result\": [\n      {\n        \"metric\": {\n          \"__name__\": \"up\",\n          \"job\": \"python-app\"\n        },\n        \"value\": [1640995200, \"1\"]\n      }\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Grafana Dashboards",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{grafana_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{grafana_url}}/api/dashboards",
+              "host": ["{{grafana_url}}"],
+              "path": ["api", "dashboards"]
+            }
+          },
+          "response": [
+            {
+              "name": "Dashboards List",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{grafana_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{grafana_url}}/api/dashboards",
+                  "host": ["{{grafana_url}}"],
+                  "path": ["api", "dashboards"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"dashboards\": [\n    {\n      \"id\": 1,\n      \"title\": \"ULP Platform Overview\",\n      \"url\": \"/d/overview\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "backstage_url",
+      "value": "http://localhost:7007",
+      "type": "string"
+    },
+    {
+      "key": "prometheus_url",
+      "value": "http://localhost:9090",
+      "type": "string"
+    },
+    {
+      "key": "grafana_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "your-jwt-token-here",
+      "type": "string"
+    },
+    {
+      "key": "grafana_token",
+      "value": "your-grafana-token-here",
+      "type": "string"
+    },
+    {
+      "key": "search_term",
+      "value": "python",
+      "type": "string"
+    },
+    {
+      "key": "promql_query",
+      "value": "up",
+      "type": "string"
+    }
+  ]
+}

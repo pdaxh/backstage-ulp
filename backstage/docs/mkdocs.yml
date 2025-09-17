@@ -8,6 +8,13 @@ nav:
   - Home: README.md
   - Getting Started: getting-started.md
   - User Guide: user-guide.md
+  - API Documentation: api-docs.md
+  - Architecture: architecture.md
+  - Runbooks: runbooks.md
+  - Architecture Decision Records:
+    - ADR-001: Backstage Platform: adr-001-backstage-platform.md
+    - ADR-002: Database Selection: adr-002-database-selection.md
+    - ADR-003: Authentication Strategy: adr-003-authentication-strategy.md
   - Troubleshooting: troubleshooting.md
 
 plugins:

@@ -1,0 +1,126 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: react-frontend
+  title: React Frontend Application
+  description: A modern React frontend application with TypeScript and Material-UI
+  tags:
+    - react
+    - typescript
+    - frontend
+    - web
+    - material-ui
+  annotations:
+    backstage.io/managed-by-location: file:./examples/react-frontend.yaml
+    backstage.io/managed-by-origin-location: file:./examples/react-frontend.yaml
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: pdaxh/react-frontend
+spec:
+  type: website
+  lifecycle: production
+  owner: team-ulp
+  system: ulp-platform
+  providesApis:
+    - react-frontend-api
+  consumesApis:
+    - python-app-api
+  dependsOn:
+    - resource:nginx
+  links:
+    - url: https://github.com/pdaxh/react-frontend
+      title: Source Code
+      icon: github
+    - url: http://localhost:3000
+      title: Application
+      icon: web
+    - url: http://localhost:3000/docs
+      title: Storybook
+      icon: docs
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: react-frontend-api
+  title: React Frontend API
+  description: Frontend API endpoints and data contracts
+  tags:
+    - react
+    - frontend
+    - api
+    - typescript
+  annotations:
+    backstage.io/managed-by-location: file:./examples/react-frontend.yaml
+spec:
+  type: openapi
+  lifecycle: production
+  owner: team-ulp
+  system: ulp-platform
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: React Frontend API
+      version: 1.0.0
+      description: Frontend API for React application
+    servers:
+      - url: http://localhost:3000/api
+        description: Development server
+    paths:
+      /api/health:
+        get:
+          summary: Frontend health check
+          description: Returns the health status of the frontend application
+          responses:
+            '200':
+              description: Frontend is healthy
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "healthy"
+                      version:
+                        type: string
+                        example: "1.0.0"
+      /api/config:
+        get:
+          summary: Frontend configuration
+          description: Returns frontend configuration settings
+          responses:
+            '200':
+              description: Configuration settings
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      apiUrl:
+                        type: string
+                        example: "http://localhost:8080"
+                      features:
+                        type: object
+                        properties:
+                          darkMode:
+                            type: boolean
+                            example: true
+                          analytics:
+                            type: boolean
+                            example: false
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: nginx
+  title: Nginx Web Server
+  description: Nginx web server for serving the React frontend
+  tags:
+    - nginx
+    - web-server
+    - proxy
+  annotations:
+    backstage.io/managed-by-location: file:./examples/react-frontend.yaml
+spec:
+  type: web-server
+  owner: team-ulp
+  system: ulp-platform
