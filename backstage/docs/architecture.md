@@ -180,7 +180,7 @@ sequenceDiagram
 
 1. **Encryption at Rest**: Database encryption
 2. **Encryption in Transit**: TLS 1.3
-3. **Secrets Management**: Kubernetes secrets + external vault
+3. **Secrets Management**: Kubernetes secrets + external secret management
 4. **Data Masking**: PII protection in logs
 
 ## Deployment Architecture
