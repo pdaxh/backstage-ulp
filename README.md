@@ -10,6 +10,7 @@ This project consists of:
 - **`docker-compose-simple.yml`** - Docker Compose setup for local development
 - **`k8s/`** - Kustomize manifests for Kubernetes deployment
 - **`argocd/`** - ArgoCD application configuration
+- **`vault/`** - HashiCorp Vault configuration for secret management
 - **`.github/workflows/`** - CI/CD pipelines for building and deploying
 
 ### **Deployment Options**
@@ -24,6 +25,11 @@ This project consists of:
    - Scalable and production-ready
    - Requires Kubernetes cluster
 
+3. **Vault Integration** (Secret Management)
+   - Secure secret storage and rotation
+   - Integration with Backstage and ArgoCD
+   - Support for both development and production
+
 ## Quick Start
 
 ### Prerequisites
@@ -31,6 +37,7 @@ This project consists of:
 - Docker and Docker Compose
 - (Optional) Kubernetes cluster with ArgoCD installed
 - (Optional) kubectl configured
+- (Optional) HashiCorp Vault for secret management
 
 ## Docker Compose Setup (Recommended for Development)
 
@@ -96,6 +103,39 @@ PGDATABASE=backstage
 # Backend Secret (change this in production!)
 BACKEND_SECRET=dev-secret-please-change
 ```
+
+## Vault Integration (Secret Management)
+
+### **Quick Start with Vault**
+
+```bash
+# Start Vault with Docker Compose
+./scripts/setup-vault.sh docker
+
+# Initialize Vault with secrets
+./scripts/setup-vault.sh init
+
+# Start Backstage with Vault
+cd backstage
+yarn start --config app-config.vault.yaml
+```
+
+### **Vault Features**
+
+- 🔐 **Secure Secret Storage** - Store database credentials, API keys, and tokens
+- 🔄 **Automatic Secret Rotation** - Rotate secrets automatically
+- 🛡️ **Access Control** - Fine-grained policies for different services
+- 🔒 **Encryption** - Encrypt sensitive data with transit engine
+- 📊 **Audit Logging** - Track all secret access and changes
+
+### **Available Secrets**
+
+- **Database**: `secret/backstage/database`
+- **Authentication**: `secret/backstage/auth`
+- **Application**: `secret/backstage/app`
+- **ArgoCD**: `secret/argocd/github`
+
+For detailed Vault integration guide, see [Vault Integration Documentation](./docs/vault-integration.md).
 
 ## Kubernetes/ArgoCD Setup (Production)
 
