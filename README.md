@@ -120,20 +120,26 @@ cd backstage
 yarn start --config app-config.vault.yaml
 ```
 
-### **Vault Features**
+### **🔐 Vault Features**
 
-- 🔐 **Secure Secret Storage** - Store database credentials, API keys, and tokens
-- 🔄 **Automatic Secret Rotation** - Rotate secrets automatically
-- 🛡️ **Access Control** - Fine-grained policies for different services
-- 🔒 **Encryption** - Encrypt sensitive data with transit engine
-- 📊 **Audit Logging** - Track all secret access and changes
+- **Secure Secret Storage** - Database credentials, API keys, tokens
+- **Automatic Secret Rotation** - Rotate secrets automatically
+- **Access Control** - Fine-grained policies for different services
+- **Encryption** - Encrypt sensitive data with transit engine
+- **Audit Logging** - Track all secret access and changes
 
-### **Available Secrets**
+### **📊 Available Secrets**
 
 - **Database**: `secret/backstage/database`
 - **Authentication**: `secret/backstage/auth`
 - **Application**: `secret/backstage/app`
 - **ArgoCD**: `secret/argocd/github`
+
+### **🌐 Access Points**
+
+- **Vault UI**: http://localhost:8200/ui
+- **Vault API**: http://localhost:8200/v1/
+- **Root Token**: `dev-root-token`
 
 For detailed Vault integration guide, see [Vault Integration Documentation](./docs/vault-integration.md).
 
