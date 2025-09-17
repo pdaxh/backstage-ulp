@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
       - name: backstage
-        image: ghcr.io/pdaxh/backstage-ulp:latest
+        image: backstage-ulp:latest
         ports:
         - containerPort: 7007
           name: http

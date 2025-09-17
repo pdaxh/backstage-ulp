@@ -1,0 +1,55 @@
+name: Update Image Tags
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Backstage Image"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  update-tags:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Get latest image SHA
+      id: get-sha
+      run: |
+        SHA=$(git rev-parse HEAD)
+        echo "sha=$SHA" >> $GITHUB_OUTPUT
+        echo "Latest commit SHA: $SHA"
+
+    - name: Update Kubernetes manifests
+      run: |
+        # Update base configuration
+        sed -i "s|image: ghcr.io/pdaxh/backstage-ulp:latest|image: ghcr.io/pdaxh/backstage-ulp:${{ steps.get-sha.outputs.sha }}|g" k8s/base/backstage.yaml
+        
+        # Update production overlay
+        sed -i "s|image: ghcr.io/pdaxh/backstage-ulp:latest|image: ghcr.io/pdaxh/backstage-ulp:${{ steps.get-sha.outputs.sha }}|g" k8s/overlays/production/backstage-production.yaml
+        
+        # Update development overlay if it exists
+        if [ -f "k8s/overlays/dev/backstage-dev.yaml" ]; then
+          sed -i "s|image: ghcr.io/pdaxh/backstage-ulp:latest|image: ghcr.io/pdaxh/backstage-ulp:${{ steps.get-sha.outputs.sha }}|g" k8s/overlays/dev/backstage-dev.yaml
+        fi
+
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add k8s/
+        git diff --staged --quiet || git commit -m "Update image tags to ${{ steps.get-sha.outputs.sha }}"
+        git push
+
+    - name: Create deployment notification
+      run: |
+        echo "🚀 New Backstage image deployed!"
+        echo "Image: ghcr.io/pdaxh/backstage-ulp:${{ steps.get-sha.outputs.sha }}"
+        echo "ArgoCD should automatically sync the changes."
