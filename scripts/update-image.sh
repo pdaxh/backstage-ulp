@@ -10,6 +10,13 @@ REGISTRY="ghcr.io"
 
 echo "🚀 Building and updating Backstage image..."
 
+# Build the Backstage application first
+echo "🔨 Building Backstage application..."
+cd backstage
+yarn install --immutable
+yarn build:backend
+cd ..
+
 # Build the image
 echo "📦 Building Docker image..."
 docker build -f backstage/packages/backend/Dockerfile -t ${IMAGE_NAME}:${TAG} ./backstage
