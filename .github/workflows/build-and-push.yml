@@ -6,11 +6,13 @@ on:
     paths:
       - 'backstage/**'
       - 'k8s/**'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main ]
     paths:
       - 'backstage/**'
       - 'k8s/**'
+      - '.github/workflows/**'
 
 env:
   REGISTRY: ghcr.io
