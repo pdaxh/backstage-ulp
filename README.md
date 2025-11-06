@@ -87,7 +87,7 @@ The Docker Compose setup uses:
 
 ### **Environment Variables**
 
-Create a `.env` file (already included):
+Create a `.env` file in the `Backstage-ULP/` directory:
 ```bash
 # Database Configuration
 PGUSER=backstage
@@ -96,7 +96,45 @@ PGDATABASE=backstage
 
 # Backend Secret (change this in production!)
 BACKEND_SECRET=dev-secret-please-change
+
+# GitHub Integration (for catalog auto-discovery)
+# Generate a token at: https://github.com/settings/tokens
+# Required scopes: repo (for private repos) or public_repo (for public repos)
+GITHUB_TOKEN=TOKEN
 ```
+
+### **GitHub Integration Setup**
+
+Backstage is configured to automatically discover services from GitHub repositories. To enable this:
+
+1. **Create a GitHub Personal Access Token**:
+   - Go to: https://github.com/settings/tokens
+   - Generate new token (classic)
+   - Select scopes: `repo` (for private repos) or `public_repo` (for public repos only)
+   - Copy the token (starts with `ghp_`)
+
+2. **Add Token to `.env` file**:
+   ```bash
+   GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+
+3. **Restart Backstage**:
+   ```bash
+   ./start-ulp.sh stop
+   ./start-ulp.sh backstage
+   ```
+
+4. **Verify Integration**:
+   - Open Backstage: http://localhost:7007
+   - Go to Catalog → You should see your Python App component
+   - Check logs: `docker compose -f docker-compose-simple.yml logs backstage | grep -i github`
+
+**For detailed setup instructions**, see [GITHUB_SETUP.md](./GITHUB_SETUP.md)
+
+The catalog is already configured to pull from:
+- `https://github.com/pdaxh/python-app/blob/main/catalog-info.yaml`
+
+To add more repositories, edit `app-config.local.yaml` and add entries under `catalog.locations`.
 
 ## Kubernetes/ArgoCD Setup (Production)
 

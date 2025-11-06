@@ -36,6 +36,8 @@ services:
       PGDATABASE: ${PGDATABASE:-backstage}
       # Cookie/session secret for auth; override in .env
       BACKEND_SECRET: ${BACKEND_SECRET:-dev-secret-please-change}
+      # GitHub token for catalog auto-discovery (required for GitHub integration)
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       NODE_ENV: production
     volumes:
       # Mount the entire backstage directory
