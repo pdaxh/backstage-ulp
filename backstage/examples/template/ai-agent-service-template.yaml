@@ -1,0 +1,217 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: ai-agent-service
+  title: AI Agent Service Template
+  description: A production-ready template for creating AI agent services using Python, Google ADK, and Kubernetes deployment
+  tags:
+    - python
+    - ai
+    - adk
+    - kubernetes
+    - gitops
+    - golden-path
+  annotations:
+    backstage.io/managed-by-location: file:./examples/template/ai-agent-service-template.yaml
+spec:
+  owner: user:default/user
+  type: service
+
+  parameters:
+    - title: Basic Information
+      required:
+        - name
+        - description
+        - repoUrl
+      properties:
+        name:
+          title: Service Name
+          type: string
+          description: Unique name of the AI agent service (e.g., study-buddy-ai, tutor-agent)
+          ui:autofocus: true
+          ui:pattern: '^[a-z0-9-]+$'
+          ui:help: 'Use lowercase letters, numbers, and hyphens only'
+        description:
+          title: Service Description
+          type: string
+          description: Brief description of what this AI agent does
+          ui:options:
+            rows: 3
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+            requestUserPermission: write
+
+    - title: Configuration
+      properties:
+        openaiApiKey:
+          title: OpenAI API Key (Optional)
+          type: string
+          description: OpenAI API key for the agent (can be set later via secrets)
+          ui:widget: password
+        port:
+          title: Service Port
+          type: number
+          description: Port number for the service
+          default: 8080
+        namespace:
+          title: Kubernetes Namespace
+          type: string
+          description: Kubernetes namespace for deployment
+          default: '{{cookiecutter.name}}'
+        includeHealthCheck:
+          title: Include Health Check Endpoint
+          type: boolean
+          description: Add a /health endpoint for Kubernetes probes
+          default: true
+        includeMetrics:
+          title: Include Metrics Endpoint
+          type: boolean
+          description: Add a /metrics endpoint for Prometheus
+          default: false
+
+    - title: Deployment
+      properties:
+        includeArgoCD:
+          title: Include ArgoCD Application
+          type: boolean
+          description: Create ArgoCD application manifest for GitOps deployment
+          default: true
+        includeCI:
+          title: Include CI/CD Pipeline
+          type: boolean
+          description: Create GitHub Actions workflow for automated builds
+          default: true
+
+  steps:
+    - id: fetch-template
+      name: Fetch Template Files
+      action: fetch:template
+      input:
+        url: https://github.com/ElijahFerreira/study-buddy-ai
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          port: ${{ parameters.port }}
+          namespace: ${{ parameters.namespace }}
+          include_health_check: ${{ parameters.includeHealthCheck }}
+          include_metrics: ${{ parameters.includeMetrics }}
+
+    - id: create-catalog-info
+      name: Create Catalog Info
+      action: fetch:plain
+      input:
+        targetPath: ./catalog-info.yaml
+        url: https://raw.githubusercontent.com/ElijahFerreira/study-buddy-ai/main/catalog-info.yaml
+
+    - id: customize-files
+      name: Customize Template Files
+      action: fetch:plain
+      input:
+        files:
+          - path: pyproject.toml
+            url: https://raw.githubusercontent.com/ElijahFerreira/study-buddy-ai/main/pyproject.toml
+
+    - id: create-k8s-manifests
+      name: Create Kubernetes Manifests
+      action: fetch:plain
+      input:
+        targetPath: ./k8s
+        url: https://github.com/ElijahFerreira/study-buddy-ai/tree/main/k8s
+
+    - id: create-dockerfile
+      name: Create Dockerfile
+      action: fetch:plain
+      input:
+        targetPath: ./Dockerfile
+        url: https://raw.githubusercontent.com/ElijahFerreira/study-buddy-ai/main/Dockerfile
+
+    - id: create-github-workflow
+      name: Create GitHub Actions Workflow
+      if: ${{ parameters.includeCI }}
+      action: fetch:plain
+      input:
+        targetPath: ./.github/workflows/ci-cd.yml
+        url: https://raw.githubusercontent.com/ElijahFerreira/study-buddy-ai/main/.github/workflows/ci-cd.yml
+
+    - id: create-argocd-app
+      name: Create ArgoCD Application
+      if: ${{ parameters.includeArgoCD }}
+      action: fetch:plain
+      input:
+        targetPath: ./argocd-application.yaml
+        url: https://raw.githubusercontent.com/pdaxh/ULP/main/argocd-ULP/template/study-buddy-ai.yaml
+
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        description: ${{ parameters.description }}
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: 'main'
+        gitCommitMessage: 'Initial commit: AI Agent Service created from Backstage template'
+
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in Catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}
+    text: |
+      ## ✅ AI Agent Service Created Successfully!
+
+      Your new AI agent service **${{ parameters.name }}** has been created and registered in Backstage.
+
+      ### 📋 Next Steps:
+
+      1. **Configure Secrets:**
+         ```bash
+         kubectl create secret generic ${{ parameters.name }}-secrets \
+           --from-literal=openai-api-key=your-key-here \
+           -n ${{ parameters.namespace }}
+         ```
+
+      2. **Deploy to Kubernetes:**
+         ```bash
+         # If using ArgoCD (recommended)
+         kubectl apply -f argocd-application.yaml
+         
+         # Or deploy directly
+         kubectl apply -f k8s/
+         ```
+
+      3. **Set up CI/CD:**
+         - The GitHub Actions workflow is ready
+         - Configure `GITHUB_TOKEN` secret in repository settings
+         - Push to trigger the first build
+
+      4. **Customize Your Agent:**
+         - Edit agent logic in `agents/` directory
+         - Add tools in `tools/` directory
+         - Update `pyproject.toml` with additional dependencies
+
+      ### 📚 Documentation:
+      - Service is registered in Backstage catalog
+      - View service details at: ${{ steps['register'].output.entityRef }}
+      - Repository: ${{ steps['publish'].output.remoteUrl }}
+
+      ### 🔧 Development:
+      ```bash
+      # Local development
+      uv venv
+      uv sync
+      uv run adk web . --host 0.0.0.0 --port ${{ parameters.port }}
+      ```
+
