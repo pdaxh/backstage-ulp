@@ -7,6 +7,20 @@ metadata:
 spec:
   owner: guests
 ---
+# ULP Platform System
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: ulp-platform
+  title: ULP Platform
+  description: The main platform system for ULP applications
+  tags:
+    - platform
+    - infrastructure
+spec:
+  owner: user:default/user
+  domain: default
+---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component
 apiVersion: backstage.io/v1alpha1
 kind: Component

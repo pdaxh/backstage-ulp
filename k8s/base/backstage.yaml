@@ -100,9 +100,11 @@ spec:
       labels:
         app: backstage
     spec:
+      imagePullSecrets:
+      - name: ghcr-secret
       containers:
       - name: backstage
-        image: backstage-ulp:latest
+        image: ghcr.io/pdaxh/backstage-ulp:latest
         ports:
         - containerPort: 7007
           name: http

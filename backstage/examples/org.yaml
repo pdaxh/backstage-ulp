@@ -7,6 +7,16 @@ metadata:
 spec:
   memberOf: [guests]
 ---
+# Default user entity for ULP platform
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: user
+  title: Default User
+  description: Default user for ULP platform components
+spec:
+  memberOf: [guests]
+---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
 apiVersion: backstage.io/v1alpha1
 kind: Group
