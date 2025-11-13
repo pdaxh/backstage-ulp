@@ -38,19 +38,19 @@ jobs:
       with:
         registry: ${{ env.REGISTRY }}
         username: pdaxh
-        password: ${{ secrets.GHCR_TOKEN }}
+        password: ${{ secrets.GCHR_TOKEN }}
 
     - name: Verify package access
       run: |
         echo "Verifying access to package: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
         # Test if we can access the package
-        curl -H "Authorization: token ${{ secrets.GHCR_TOKEN }}" \
+        curl -H "Authorization: token ${{ secrets.GCHR_TOKEN }}" \
              -H "Accept: application/vnd.github.v3+json" \
              "https://api.github.com/user/packages/container/${{ env.IMAGE_NAME }}" || echo "Package may not exist yet, will be created on first push"
         
         # Test Docker login
         echo "Testing Docker login to GHCR..."
-        echo "${{ secrets.GHCR_TOKEN }}" | docker login ${{ env.REGISTRY }} -u pdaxh --password-stdin
+        echo "${{ secrets.GCHR_TOKEN }}" | docker login ${{ env.REGISTRY }} -u pdaxh --password-stdin
 
     - name: Extract metadata
       id: meta
