@@ -47,7 +47,7 @@ spec:
     syntax = "proto3";
 
     service Exampler {
-      rpc Example (ExampleMessage) returns (ExampleMessage) {};
+      rpc Example (ExampleMessage) returns (ExampleMessage) {};s
     }
 
     message ExampleMessage {
